@@ -63,12 +63,18 @@ int not_an_int(char *string){
 
 void get_or_del(char *string, int b){
   //b = 1 for delete
+  if(string == NULL){
+    bad_command();
+    return;
+  }
   char *tempstr = strdup(string);
+  
   char *k  = strsep(&tempstr, ",");
   if(tempstr != NULL){
     bad_command();
     return;
   }
+
   free(tempstr);
 
   if(not_an_int(k)){
@@ -99,6 +105,10 @@ void get_or_del(char *string, int b){
 }
 
 void put(char *string){
+  if(string == NULL){
+    bad_command();
+    return;
+  }
   char *tempstr = strdup(string);
   char *k  = strsep(&tempstr, ",");
   char *v = strsep(&tempstr, ",");
@@ -115,7 +125,7 @@ void put(char *string){
   }
 
   int x = atoi(k);
-  if (v==NULL){
+  if (k==NULL || v==NULL){
     bad_command();
     return;
   }
