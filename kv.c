@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <ctype.h>
 //#include <unistd.h>
 
 #define HTABLESIZE 10
@@ -50,6 +51,16 @@ hash_node *create_hash_node(int key, char *value){
   return new_hn;
 }
 
+int not_an_int(char *string){
+  int i;
+  for (i=0; i<strlen(string); i++){
+    if (isdigit(string[i]) ==0){
+      return 1;
+    }
+  }
+  return 0;
+}
+
 void get_or_del(char *string, int b){
   //b = 1 for delete
   char *tempstr = strdup(string);
@@ -59,14 +70,14 @@ void get_or_del(char *string, int b){
     return;
   }
   free(tempstr);
-  char *ptr;
-  long x;
-  x = strtol(k, &ptr, 10);
-  
-  if (ptr!=NULL){
+
+  if(not_an_int(k)){
+    //printf("%s",k);
     bad_command();
     return;
   }
+  
+  int x = atoi(k);
   int hash_key = hash(x);
 
   hash_node *temp_hn = ht[hash_key];
@@ -83,7 +94,7 @@ void get_or_del(char *string, int b){
     }
     temp_hn = temp_hn->next;
   }
-  printf("%ld not found\n", x);
+  printf("%d not found\n", x);
   return;
 }
 
@@ -96,11 +107,15 @@ void put(char *string){
     return;
   }
   free(tempstr);
-  char *ptr;
-  long x;
-  x = strtol(k, &ptr, 10);
-  
-  if (ptr!=NULL || v==NULL){
+
+  if(not_an_int(k)){
+    //printf("%s",k);
+    bad_command();
+    return;
+  }
+
+  int x = atoi(k);
+  if (v==NULL){
     bad_command();
     return;
   }
