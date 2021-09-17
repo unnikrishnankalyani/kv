@@ -84,9 +84,16 @@ void put(char *string){
   char *tempstr = strdup(string);
   char *k  = strsep(&tempstr, ",");
   char *v = strsep(&tempstr, ",");
-  assert(tempstr == NULL);
+  if(tempstr != NULL){
+    bad_command();
+    return;
+  }
   free(tempstr);
   int x = atoi(k);
+  if (v==NULL){
+    bad_command();
+    return;
+  }
 
   int hash_key = hash(x);
   
