@@ -24,6 +24,11 @@ void init_ht(){
   }
 }
 
+void bad_command(){
+  printf("bad command\n");
+  return;
+}
+
 unsigned int hash(unsigned int x) {
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
@@ -49,7 +54,10 @@ void get_or_del(char *string, int b){
   //b = 1 for delete
   char *tempstr = strdup(string);
   char *k  = strsep(&tempstr, ",");
-  assert(tempstr == NULL);
+  if(tempstr != NULL){
+    bad_command();
+    return;
+  }
   free(tempstr);
   int x = atoi(k);
   int hash_key = hash(x);
@@ -114,9 +122,7 @@ void put(char *string){
 
 void read_from_database(){
   FILE *fptr;
-  fptr = fopen("database.txt","r");
-
-  if (fptr) {
+  if(fptr = fopen("database.txt","r")){
     char *line;
     size_t len = 0;
     ssize_t read;
@@ -125,8 +131,8 @@ void read_from_database(){
     }
     if(line)
       free(line);
+    fclose(fptr);
   }
-  fclose(fptr);
   return;
 }
 
@@ -196,7 +202,7 @@ int main(int argc, char *argv[]){
         dump();
         break;
       default:
-        printf("bad command\n");
+        bad_command();
         break;
     }
   }
