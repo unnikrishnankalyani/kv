@@ -59,7 +59,14 @@ void get_or_del(char *string, int b){
     return;
   }
   free(tempstr);
-  int x = atoi(k);
+  char *ptr;
+  long x;
+  x = strtol(k, &ptr, 10);
+  
+  if (ptr!=NULL){
+    bad_command();
+    return;
+  }
   int hash_key = hash(x);
 
   hash_node *temp_hn = ht[hash_key];
@@ -76,7 +83,7 @@ void get_or_del(char *string, int b){
     }
     temp_hn = temp_hn->next;
   }
-  printf("%d not found\n", x);
+  printf("%ld not found\n", x);
   return;
 }
 
@@ -89,8 +96,11 @@ void put(char *string){
     return;
   }
   free(tempstr);
-  int x = atoi(k);
-  if (v==NULL){
+  char *ptr;
+  long x;
+  x = strtol(k, &ptr, 10);
+  
+  if (ptr!=NULL || v==NULL){
     bad_command();
     return;
   }
