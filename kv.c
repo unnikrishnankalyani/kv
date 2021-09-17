@@ -23,16 +23,7 @@ void init_ht(){
     ht[i] = NULL;
   }
 }
-void printtable(){
-  int i;
-  for (i=0; i<HTABLESIZE; i++){
-    if(ht[i] == NULL){
-      printf("%d null\n", i);
-    } else{
-      printf("%d: (%d, %s)\n", i, ht[i]->key, ht[i]->value);
-    }
-  }
-}
+
 unsigned int hash(unsigned int x) {
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
@@ -43,10 +34,11 @@ unsigned int hash(unsigned int x) {
     return x ;
 }
 
-hash_node *create_hash_node(int key, const char *value){
+hash_node *create_hash_node(int key, char *value){
   printf("----trying to insert %d %s------\n", key, value);
   hash_node *new_hn = (hash_node *) malloc(sizeof(hash_node));
   new_hn->key = key;
+  value[strcspn(value, "\n")] = 0; //manage \n to avoid weird errors
   new_hn->value = (char *)malloc(sizeof(value));
   strcpy(new_hn->value, value);
   new_hn->next = NULL; //set this later if needed
@@ -113,11 +105,26 @@ void read_from_database(){
   return;
 }
 
+void print_table(){
+  int i;
+
+  for (i=0; i<HTABLESIZE; i++){
+    if(ht[i] != NULL){
+      hash_node *temp_hn = ht[i];
+      while (temp_hn!=NULL){
+        printf("%d: (%d, %s)\n", i, temp_hn->key, temp_hn->value);
+        temp_hn = temp_hn->next;
+      }
+    }
+  }
+  return;
+}
+
 void dump(){
-  printtable();
   FILE *fptr; 
   fptr = fopen("database.txt","w"); //do I need a backup?
   int i;
+
   for (i=0; i<HTABLESIZE; i++){
     if(ht[i] != NULL){
       hash_node *temp_hn = ht[i];
@@ -143,8 +150,18 @@ int main(int argc, char *argv[]){
   //read in input kv pairs
   for (i=1; i<argc; i++){
     printf("\n\n\n%s\n", argv[i]);
-    put(argv[i]);   
+    char *string = strdup(argv[i]);
+    char *command  = strsep(&string, ",");
+    
+    switch(command[0]){
+      case 'p':
+        put(string);   
+      default:
+        printf("bad command\n");
+    }
+
   }
+  print_table();
 
   //dump into file
   dump();
